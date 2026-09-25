@@ -2,17 +2,21 @@ import React from 'react';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
 import { QuickActions } from '../components/dashboard/QuickActions';
 import { FavoritesWidget } from '../components/dashboard/FavoritesWidget';
+import { LanguageDistribution } from '../components/dashboard/LanguageDistribution';
+import { RecentSnippets } from '../components/dashboard/RecentSnippets';
+import { VaultInsights } from '../components/dashboard/VaultInsights';
 import { Button } from '../components/common';
 import { FiPlus, FiZap } from 'react-icons/fi';
 
 /**
- * Dashboard Page View with Stats, Quick Actions, and Favorites Widget
+ * Modern Analytics Dashboard View
  */
 export function DashboardPage({
   snippets = [],
   onNavigate,
   onCreateSnippet,
   onSelectSnippet,
+  onSelectLanguage,
   onCopyCode,
   onExportData,
   onImportClick,
@@ -55,7 +59,7 @@ export function DashboardPage({
             {getGreeting()}, Developer!
           </h2>
           <p className="text-xs text-dark-muted light:text-light-muted">
-            Here is what is currently stored in your personal offline code vault.
+            Here is your personal offline code vault analytics, insights, and recent activity.
           </p>
         </div>
 
@@ -80,14 +84,6 @@ export function DashboardPage({
         onNavigate={onNavigate}
       />
 
-      {/* Favorites Widget */}
-      <FavoritesWidget
-        favorites={favorites}
-        onSelectSnippet={onSelectSnippet}
-        onNavigateToFavorites={() => onNavigate('favorites')}
-        onCopyCode={onCopyCode}
-      />
-
       {/* Quick Actions Bar */}
       <QuickActions
         onCreateSnippet={onCreateSnippet}
@@ -96,6 +92,31 @@ export function DashboardPage({
         onExportData={onExportData}
         onImportClick={onImportClick}
       />
+
+      {/* Analytics Grid: Language Distribution & Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <LanguageDistribution
+          snippets={snippets}
+          onSelectLanguage={onSelectLanguage}
+        />
+        <RecentSnippets
+          snippets={snippets}
+          onSelectSnippet={onSelectSnippet}
+          onNavigateToAll={() => onNavigate('snippets')}
+          onCopyCode={onCopyCode}
+        />
+      </div>
+
+      {/* Favorites & Vault Code Volume Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <FavoritesWidget
+          favorites={favorites}
+          onSelectSnippet={onSelectSnippet}
+          onNavigateToFavorites={() => onNavigate('favorites')}
+          onCopyCode={onCopyCode}
+        />
+        <VaultInsights snippets={snippets} />
+      </div>
     </div>
   );
 }

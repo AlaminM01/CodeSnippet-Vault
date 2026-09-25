@@ -211,6 +211,10 @@ function AppContent() {
             }}
             onCreateSnippet={handleOpenCreate}
             onSelectSnippet={handleSelectSnippet}
+            onSelectLanguage={(langId) => {
+              setSelectedLanguageFilter(langId);
+              setActiveTab('snippets');
+            }}
             onCopyCode={handleCopyCode}
             onExportData={() => console.log('Export')}
             onImportClick={() => console.log('Import')}
