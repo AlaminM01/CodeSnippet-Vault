@@ -1,4 +1,3 @@
-/**
- * Layout components: Sidebar, Navbar, AppLayout
- */
-export const LAYOUT_COMPONENTS = 'layout';
+export * from './Sidebar';
+export * from './Navbar';
+export * from './AppLayout';
