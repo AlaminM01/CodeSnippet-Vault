@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FiGrid, FiList, FiPlus, FiCode } from 'react-icons/fi';
 import { SnippetCard } from '../components/snippets/SnippetCard';
+import { FilterBar } from '../components/snippets/FilterBar';
 import { Button } from '../components/common/Button';
 import { EmptyState } from '../components/common/EmptyState';
 import { SearchBar } from '../components/common/SearchBar';
 import { filterSnippets } from '../utils/search';
 
 /**
- * Snippets Listing Page View with Real-time Search
+ * Snippets Listing Page View with Real-time Search, Language Filtering & Sorting
  */
 export function SnippetsPage({
   snippets = [],
+  selectedLanguage = 'all',
+  onSelectLanguage,
   onSelectSnippet,
   onEditSnippet,
   onDeleteSnippet,
@@ -21,11 +24,50 @@ export function SnippetsPage({
 }) {
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentLang, setCurrentLang] = useState(selectedLanguage);
+  const [sortBy, setSortBy] = useState('newest');
 
-  const filteredSnippets = filterSnippets(snippets, searchQuery);
+  // Sync external selectedLanguage if changed
+  React.useEffect(() => {
+    setCurrentLang(selectedLanguage);
+  }, [selectedLanguage]);
+
+  // Combined Filtering & Sorting
+  const filteredAndSortedSnippets = useMemo(() => {
+    // 1. Language Filter
+    let result = snippets;
+    if (currentLang !== 'all') {
+      result = result.filter((s) => s.language === currentLang);
+    }
+
+    // 2. Real-time Search Filter
+    result = filterSnippets(result, searchQuery);
+
+    // 3. Sorting
+    return [...result].sort((a, b) => {
+      if (sortBy === 'newest') {
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      }
+      if (sortBy === 'oldest') {
+        return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+      }
+      if (sortBy === 'title-asc') {
+        return (a.title || '').localeCompare(b.title || '');
+      }
+      if (sortBy === 'title-desc') {
+        return (b.title || '').localeCompare(a.title || '');
+      }
+      if (sortBy === 'lines-desc') {
+        const linesA = (a.code || '').split('\n').length;
+        const linesB = (b.code || '').split('\n').length;
+        return linesB - linesA;
+      }
+      return 0;
+    });
+  }, [snippets, currentLang, searchQuery, sortBy]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-dark-border/60 dark:border-dark-border/60 light:border-light-border">
         <div className="space-y-1">
@@ -34,11 +76,11 @@ export function SnippetsPage({
               All Code Snippets
             </h2>
             <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">
-              {filteredSnippets.length} of {snippets.length}
+              {filteredAndSortedSnippets.length} of {snippets.length}
             </span>
           </div>
           <p className="text-xs text-dark-subtle light:text-light-subtle">
-            Browse, search, manage, and duplicate snippets across all languages
+            Browse, search, filter by language, manage, and duplicate snippets
           </p>
         </div>
 
@@ -84,28 +126,48 @@ export function SnippetsPage({
         </div>
       </div>
 
-      {/* Real-time Search Bar */}
-      <div className="max-w-xl">
-        <SearchBar
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onClear={() => setSearchQuery('')}
-          placeholder="Search by title, code, tag, or language..."
+      {/* Search and Language Filter Controls */}
+      <div className="space-y-3">
+        <div className="max-w-xl">
+          <SearchBar
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onClear={() => setSearchQuery('')}
+            placeholder="Search by title, code, tag, or language..."
+          />
+        </div>
+
+        <FilterBar
+          snippets={snippets}
+          selectedLanguage={currentLang}
+          onSelectLanguage={(lang) => {
+            setCurrentLang(lang);
+            if (onSelectLanguage) onSelectLanguage(lang);
+          }}
+          sortBy={sortBy}
+          onChangeSort={setSortBy}
         />
       </div>
 
       {/* Snippet Grid / List Content */}
-      {filteredSnippets.length === 0 ? (
+      {filteredAndSortedSnippets.length === 0 ? (
         <EmptyState
           icon={FiCode}
-          title={searchQuery ? 'No matching snippets found' : 'No snippets saved yet'}
+          title={searchQuery || currentLang !== 'all' ? 'No matching snippets' : 'No snippets saved yet'}
           description={
-            searchQuery
-              ? `We couldn't find any snippets matching "${searchQuery}". Try searching for another term or clear the search query.`
+            searchQuery || currentLang !== 'all'
+              ? `No snippets found matching your current search query or language filter (${currentLang}). Try resetting your filters.`
               : 'Your snippet vault is currently empty. Start saving reusable code snippets today!'
           }
-          actionLabel={searchQuery ? 'Clear Search' : 'Create First Snippet'}
-          onAction={searchQuery ? () => setSearchQuery('') : onCreateSnippet}
+          actionLabel={searchQuery || currentLang !== 'all' ? 'Reset Filters' : 'Create First Snippet'}
+          onAction={() => {
+            if (searchQuery || currentLang !== 'all') {
+              setSearchQuery('');
+              setCurrentLang('all');
+            } else {
+              onCreateSnippet();
+            }
+          }}
         />
       ) : (
         <div
@@ -115,7 +177,7 @@ export function SnippetsPage({
               : 'space-y-3'
           }
         >
-          {filteredSnippets.map((snippet) => (
+          {filteredAndSortedSnippets.map((snippet) => (
             <SnippetCard
               key={snippet.id}
               snippet={snippet}

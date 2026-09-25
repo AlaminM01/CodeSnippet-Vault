@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from './components/layout';
-import { DashboardPage, SnippetsPage } from './pages';
+import { DashboardPage, SnippetsPage, LanguagesPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
 import { ConfirmModal, CommandPaletteModal } from './components/common';
@@ -11,6 +11,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [snippets, setSnippets] = useState(INITIAL_SNIPPETS);
   const [theme, setTheme] = useState('dark');
+  const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('all');
 
   // Modal States
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -140,11 +141,20 @@ export default function App() {
     setIsDetailModalOpen(true);
   };
 
+  // Select language from Languages view
+  const handleSelectLanguageFromOverview = (langId) => {
+    setSelectedLanguageFilter(langId);
+    setActiveTab('snippets');
+  };
+
   return (
     <>
       <AppLayout
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={(tab) => {
+          setActiveTab(tab);
+          if (tab === 'snippets') setSelectedLanguageFilter('all');
+        }}
         onOpenCreateModal={handleOpenCreate}
         onOpenSearch={() => setIsSearchModalOpen(true)}
         totalSnippets={snippets.length}
@@ -160,14 +170,17 @@ export default function App() {
             ? 'Favorite Snippets'
             : activeTab === 'tags'
             ? 'Tags & Categories'
-            : 'Languages'
+            : 'Languages & Stacks'
         }
         pageDescription="Manage, organize, and inspect your code repository"
       >
         {activeTab === 'dashboard' && (
           <DashboardPage
             snippets={snippets}
-            onNavigate={(tab) => setActiveTab(tab)}
+            onNavigate={(tab) => {
+              setActiveTab(tab);
+              if (tab === 'snippets') setSelectedLanguageFilter('all');
+            }}
             onCreateSnippet={handleOpenCreate}
             onExportData={() => console.log('Export')}
             onImportClick={() => console.log('Import')}
@@ -177,12 +190,24 @@ export default function App() {
         {activeTab === 'snippets' && (
           <SnippetsPage
             snippets={snippets}
+            selectedLanguage={selectedLanguageFilter}
+            onSelectLanguage={setSelectedLanguageFilter}
             onSelectSnippet={handleSelectSnippet}
             onEditSnippet={handleOpenEdit}
             onDeleteSnippet={handleRequestDelete}
             onDuplicateSnippet={handleDuplicateSnippet}
             onToggleFavorite={handleToggleFavorite}
             onCreateSnippet={handleOpenCreate}
+          />
+        )}
+
+        {activeTab === 'languages' && (
+          <LanguagesPage
+            snippets={snippets}
+            onSelectLanguage={handleSelectLanguageFromOverview}
+            onCreateSnippetInLanguage={(lang) => {
+              handleOpenCreate();
+            }}
           />
         )}
       </AppLayout>
