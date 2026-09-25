@@ -1,4 +1,4 @@
-/**
- * Common reusable UI components
- */
-export const COMMON_COMPONENTS = 'common';
+export * from './Button';
+export * from './Badge';
+export * from './Input';
+export * from './Card';
