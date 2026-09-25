@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Toast } from '../components/common/Toast';
 
 const ToastContext = createContext(null);
@@ -31,18 +32,20 @@ export function ToastProvider({ children }) {
     <ToastContext.Provider value={{ toast }}>
       {children}
 
-      {/* Floating Toast Notification Container */}
+      {/* Floating Toast Notification Container with AnimatePresence */}
       <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none">
-        {toasts.map((item) => (
-          <div key={item.id} className="pointer-events-auto">
-            <Toast
-              id={item.id}
-              type={item.type}
-              message={item.message}
-              onDismiss={removeToast}
-            />
-          </div>
-        ))}
+        <AnimatePresence>
+          {toasts.map((item) => (
+            <div key={item.id} className="pointer-events-auto">
+              <Toast
+                id={item.id}
+                type={item.type}
+                message={item.message}
+                onDismiss={removeToast}
+              />
+            </div>
+          ))}
+        </AnimatePresence>
       </div>
     </ToastContext.Provider>
   );

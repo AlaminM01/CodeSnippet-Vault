@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { AppLayout } from './components/layout';
 import { DashboardPage, SnippetsPage, LanguagesPage, FavoritesPage, TagsPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
-import { ConfirmModal, CommandPaletteModal } from './components/common';
+import { ConfirmModal, CommandPaletteModal, PageTransition } from './components/common';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { storageService } from './services/storageService';
@@ -238,86 +239,98 @@ function AppContent() {
         }
         pageDescription="Manage, organize, and inspect your code repository"
       >
-        {activeTab === 'dashboard' && (
-          <DashboardPage
-            snippets={snippets}
-            onNavigate={(tab) => {
-              setActiveTab(tab);
-              if (tab === 'snippets') {
-                setSelectedLanguageFilter('all');
-                setSelectedTagFilter(null);
-              }
-            }}
-            onCreateSnippet={handleOpenCreate}
-            onSelectSnippet={handleSelectSnippet}
-            onSelectLanguage={(langId) => {
-              setSelectedLanguageFilter(langId);
-              setActiveTab('snippets');
-            }}
-            onCopyCode={handleCopyCode}
-            onExportData={handleExportJSON}
-            onImportClick={handleImportClick}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          {activeTab === 'dashboard' && (
+            <PageTransition key="dashboard">
+              <DashboardPage
+                snippets={snippets}
+                onNavigate={(tab) => {
+                  setActiveTab(tab);
+                  if (tab === 'snippets') {
+                    setSelectedLanguageFilter('all');
+                    setSelectedTagFilter(null);
+                  }
+                }}
+                onCreateSnippet={handleOpenCreate}
+                onSelectSnippet={handleSelectSnippet}
+                onSelectLanguage={(langId) => {
+                  setSelectedLanguageFilter(langId);
+                  setActiveTab('snippets');
+                }}
+                onCopyCode={handleCopyCode}
+                onExportData={handleExportJSON}
+                onImportClick={handleImportClick}
+              />
+            </PageTransition>
+          )}
 
-        {activeTab === 'snippets' && (
-          <SnippetsPage
-            snippets={snippets}
-            selectedLanguage={selectedLanguageFilter}
-            selectedTag={selectedTagFilter}
-            onSelectLanguage={setSelectedLanguageFilter}
-            onSelectTag={setSelectedTagFilter}
-            onSelectSnippet={handleSelectSnippet}
-            onEditSnippet={handleOpenEdit}
-            onDeleteSnippet={handleRequestDelete}
-            onDuplicateSnippet={handleDuplicateSnippet}
-            onToggleFavorite={handleToggleFavorite}
-            onCreateSnippet={handleOpenCreate}
-            onCopyCode={handleCopyCode}
-          />
-        )}
+          {activeTab === 'snippets' && (
+            <PageTransition key="snippets">
+              <SnippetsPage
+                snippets={snippets}
+                selectedLanguage={selectedLanguageFilter}
+                selectedTag={selectedTagFilter}
+                onSelectLanguage={setSelectedLanguageFilter}
+                onSelectTag={setSelectedTagFilter}
+                onSelectSnippet={handleSelectSnippet}
+                onEditSnippet={handleOpenEdit}
+                onDeleteSnippet={handleRequestDelete}
+                onDuplicateSnippet={handleDuplicateSnippet}
+                onToggleFavorite={handleToggleFavorite}
+                onCreateSnippet={handleOpenCreate}
+                onCopyCode={handleCopyCode}
+              />
+            </PageTransition>
+          )}
 
-        {activeTab === 'favorites' && (
-          <FavoritesPage
-            snippets={snippets}
-            onSelectSnippet={handleSelectSnippet}
-            onEditSnippet={handleOpenEdit}
-            onDeleteSnippet={handleRequestDelete}
-            onDuplicateSnippet={handleDuplicateSnippet}
-            onToggleFavorite={handleToggleFavorite}
-            onCopyCode={handleCopyCode}
-            onNavigateToAll={() => {
-              setActiveTab('snippets');
-              setSelectedLanguageFilter('all');
-              setSelectedTagFilter(null);
-            }}
-          />
-        )}
+          {activeTab === 'favorites' && (
+            <PageTransition key="favorites">
+              <FavoritesPage
+                snippets={snippets}
+                onSelectSnippet={handleSelectSnippet}
+                onEditSnippet={handleOpenEdit}
+                onDeleteSnippet={handleRequestDelete}
+                onDuplicateSnippet={handleDuplicateSnippet}
+                onToggleFavorite={handleToggleFavorite}
+                onCopyCode={handleCopyCode}
+                onNavigateToAll={() => {
+                  setActiveTab('snippets');
+                  setSelectedLanguageFilter('all');
+                  setSelectedTagFilter(null);
+                }}
+              />
+            </PageTransition>
+          )}
 
-        {activeTab === 'tags' && (
-          <TagsPage
-            snippets={snippets}
-            onSelectSnippet={handleSelectSnippet}
-            onEditSnippet={handleOpenEdit}
-            onDeleteSnippet={handleRequestDelete}
-            onDuplicateSnippet={handleDuplicateSnippet}
-            onToggleFavorite={handleToggleFavorite}
-            onCopyCode={handleCopyCode}
-          />
-        )}
+          {activeTab === 'tags' && (
+            <PageTransition key="tags">
+              <TagsPage
+                snippets={snippets}
+                onSelectSnippet={handleSelectSnippet}
+                onEditSnippet={handleOpenEdit}
+                onDeleteSnippet={handleRequestDelete}
+                onDuplicateSnippet={handleDuplicateSnippet}
+                onToggleFavorite={handleToggleFavorite}
+                onCopyCode={handleCopyCode}
+              />
+            </PageTransition>
+          )}
 
-        {activeTab === 'languages' && (
-          <LanguagesPage
-            snippets={snippets}
-            onSelectLanguage={(langId) => {
-              setSelectedLanguageFilter(langId);
-              setActiveTab('snippets');
-            }}
-            onCreateSnippetInLanguage={() => {
-              handleOpenCreate();
-            }}
-          />
-        )}
+          {activeTab === 'languages' && (
+            <PageTransition key="languages">
+              <LanguagesPage
+                snippets={snippets}
+                onSelectLanguage={(langId) => {
+                  setSelectedLanguageFilter(langId);
+                  setActiveTab('snippets');
+                }}
+                onCreateSnippetInLanguage={() => {
+                  handleOpenCreate();
+                }}
+              />
+            </PageTransition>
+          )}
+        </AnimatePresence>
       </AppLayout>
 
       {/* Snippet Form Modal (Handles both Create and Edit) */}

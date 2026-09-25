@@ -6,17 +6,16 @@ import {
   FiEdit2, 
   FiTrash2, 
   FiCopy as FiDuplicate,
-  FiMaximize2,
   FiClock
 } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 import { Badge } from '../common/Badge';
 import { CodeViewer } from '../common/CodeViewer';
 import { SUPPORTED_LANGUAGES } from '../../constants/languages';
 import { formatTimeAgo } from '../../utils/formatters';
 
 /**
- * Modern Snippet Card Component
- * Supports both Grid and List layouts
+ * Modern Animated Snippet Card Component with Framer Motion micro-interactions
  */
 export function SnippetCard({
   snippet,
@@ -34,7 +33,7 @@ export function SnippetCard({
     (l) => l.id === snippet.language
   ) || {
     id: snippet.language,
-    name: snippet.language.toUpperCase(),
+    name: (snippet.customLanguage || snippet.language).toUpperCase(),
     color: '#94a3b8',
     bg: 'rgba(148, 163, 184, 0.12)',
     border: 'rgba(148, 163, 184, 0.3)',
@@ -51,12 +50,18 @@ export function SnippetCard({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Compact List View Layout
+  // Compact List View Layout with motion
   if (viewMode === 'list') {
     return (
-      <div
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        whileHover={{ y: -1 }}
+        transition={{ duration: 0.15 }}
         onClick={() => onSelect(snippet)}
-        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-dark-border dark:border-dark-border light:border-light-border bg-dark-card/90 dark:bg-dark-card/90 light:bg-white hover:border-dark-borderLight hover:bg-dark-cardHover transition-all duration-150 cursor-pointer shadow-sm hover:shadow-glow-sm"
+        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-dark-border dark:border-dark-border light:border-light-border bg-dark-card/90 dark:bg-dark-card/90 light:bg-white hover:border-dark-borderLight hover:bg-dark-cardHover transition-all cursor-pointer shadow-sm hover:shadow-glow-sm"
       >
         <div className="flex items-center gap-3.5 min-w-0 flex-1">
           {/* Favorite Button */}
@@ -171,15 +176,21 @@ export function SnippetCard({
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
-  // Standard Card Grid View Layout
+  // Standard Card Grid View Layout with motion
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
       onClick={() => onSelect(snippet)}
-      className="group relative flex flex-col rounded-xl border border-dark-border dark:border-dark-border light:border-light-border bg-dark-card/90 dark:bg-dark-card/90 light:bg-white hover:border-dark-borderLight hover:bg-dark-cardHover/70 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-glow-sm hover:-translate-y-1"
+      className="group relative flex flex-col rounded-xl border border-dark-border dark:border-dark-border light:border-light-border bg-dark-card/90 dark:bg-dark-card/90 light:bg-white hover:border-dark-borderLight hover:bg-dark-cardHover/70 transition-all cursor-pointer shadow-sm hover:shadow-glow-sm"
     >
       {/* Top Card Header */}
       <div className="p-4 pb-3 flex items-start justify-between gap-3">
@@ -248,7 +259,6 @@ export function SnippetCard({
 
       {/* Card Footer: Tags & Quick Actions */}
       <div className="p-4 pt-3 mt-auto border-t border-dark-border/40 dark:border-dark-border/40 light:border-slate-100 flex items-center justify-between gap-2">
-        {/* Tags */}
         <div className="flex items-center gap-1.5 flex-wrap min-w-0 flex-1">
           {snippet.tags?.slice(0, 3).map((tag) => (
             <Badge key={tag} size="xs">
@@ -262,7 +272,6 @@ export function SnippetCard({
           )}
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-1 shrink-0">
           <button
             type="button"
@@ -317,6 +326,6 @@ export function SnippetCard({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
