@@ -3,7 +3,7 @@ import { AppLayout } from './components/layout';
 import { DashboardPage, SnippetsPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
-import { ConfirmModal } from './components/common';
+import { ConfirmModal, CommandPaletteModal } from './components/common';
 import { INITIAL_SNIPPETS } from './data/initialSnippets';
 import { generateSnippetId } from './utils/formatters';
 
@@ -19,6 +19,7 @@ export default function App() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [snippetToDelete, setSnippetToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   const favoritesCount = snippets.filter((s) => s.isFavorite).length;
 
@@ -32,12 +33,15 @@ export default function App() {
     }
   };
 
-  // Keyboard shortcut Ctrl + N for new snippet
+  // Keyboard shortcuts: Ctrl + N (new), Ctrl + K or Ctrl + F (search)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
         e.preventDefault();
         handleOpenCreate();
+      } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'k' || e.key.toLowerCase() === 'f')) {
+        e.preventDefault();
+        setIsSearchModalOpen(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -142,7 +146,7 @@ export default function App() {
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         onOpenCreateModal={handleOpenCreate}
-        onOpenSearch={() => console.log('Open Search')}
+        onOpenSearch={() => setIsSearchModalOpen(true)}
         totalSnippets={snippets.length}
         favoritesCount={favoritesCount}
         theme={theme}
@@ -217,6 +221,14 @@ export default function App() {
           setIsDeleteModalOpen(false);
           setSnippetToDelete(null);
         }}
+      />
+
+      {/* Command Palette Search Modal */}
+      <CommandPaletteModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        snippets={snippets}
+        onSelectSnippet={handleSelectSnippet}
       />
     </>
   );

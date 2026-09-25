@@ -3,9 +3,11 @@ import { FiGrid, FiList, FiPlus, FiCode } from 'react-icons/fi';
 import { SnippetCard } from '../components/snippets/SnippetCard';
 import { Button } from '../components/common/Button';
 import { EmptyState } from '../components/common/EmptyState';
+import { SearchBar } from '../components/common/SearchBar';
+import { filterSnippets } from '../utils/search';
 
 /**
- * Snippets Listing Page View
+ * Snippets Listing Page View with Real-time Search
  */
 export function SnippetsPage({
   snippets = [],
@@ -18,6 +20,9 @@ export function SnippetsPage({
   onCopyCode,
 }) {
   const [viewMode, setViewMode] = useState('grid');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredSnippets = filterSnippets(snippets, searchQuery);
 
   return (
     <div className="space-y-6">
@@ -29,11 +34,11 @@ export function SnippetsPage({
               All Code Snippets
             </h2>
             <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">
-              {snippets.length}
+              {filteredSnippets.length} of {snippets.length}
             </span>
           </div>
           <p className="text-xs text-dark-subtle light:text-light-subtle">
-            Browse, manage, and duplicate snippets across all languages and categories
+            Browse, search, manage, and duplicate snippets across all languages
           </p>
         </div>
 
@@ -79,14 +84,28 @@ export function SnippetsPage({
         </div>
       </div>
 
+      {/* Real-time Search Bar */}
+      <div className="max-w-xl">
+        <SearchBar
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onClear={() => setSearchQuery('')}
+          placeholder="Search by title, code, tag, or language..."
+        />
+      </div>
+
       {/* Snippet Grid / List Content */}
-      {snippets.length === 0 ? (
+      {filteredSnippets.length === 0 ? (
         <EmptyState
           icon={FiCode}
-          title="No snippets saved yet"
-          description="Your snippet vault is currently empty. Start saving reusable code snippets today!"
-          actionLabel="Create First Snippet"
-          onAction={onCreateSnippet}
+          title={searchQuery ? 'No matching snippets found' : 'No snippets saved yet'}
+          description={
+            searchQuery
+              ? `We couldn't find any snippets matching "${searchQuery}". Try searching for another term or clear the search query.`
+              : 'Your snippet vault is currently empty. Start saving reusable code snippets today!'
+          }
+          actionLabel={searchQuery ? 'Clear Search' : 'Create First Snippet'}
+          onAction={searchQuery ? () => setSearchQuery('') : onCreateSnippet}
         />
       ) : (
         <div
@@ -96,7 +115,7 @@ export function SnippetsPage({
               : 'space-y-3'
           }
         >
-          {snippets.map((snippet) => (
+          {filteredSnippets.map((snippet) => (
             <SnippetCard
               key={snippet.id}
               snippet={snippet}

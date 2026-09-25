@@ -5,3 +5,5 @@ export * from './Card';
 export * from './EmptyState';
 export * from './CodeViewer';
 export * from './ConfirmModal';
+export * from './SearchBar';
+export * from './CommandPaletteModal';
