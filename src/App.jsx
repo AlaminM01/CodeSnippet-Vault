@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppLayout } from './components/layout';
 import { DashboardPage, SnippetsPage, LanguagesPage, FavoritesPage, TagsPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
 import { ConfirmModal, CommandPaletteModal } from './components/common';
 import { ToastProvider, useToast } from './context/ToastContext';
-import { INITIAL_SNIPPETS } from './data/initialSnippets';
+import { storageService } from './services/storageService';
 import { generateSnippetId } from './utils/formatters';
 import { copyToClipboard } from './utils/clipboard';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [snippets, setSnippets] = useState(INITIAL_SNIPPETS);
+  const [snippets, setSnippets] = useState(() => storageService.getSnippets());
   const [theme, setTheme] = useState('dark');
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('all');
   const [selectedTagFilter, setSelectedTagFilter] = useState(null);
@@ -25,9 +25,15 @@ function AppContent() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
+  const fileInputRef = useRef(null);
   const toast = useToast();
 
   const favoritesCount = snippets.filter((s) => s.isFavorite).length;
+
+  // Persist snippets automatically to LocalStorage on every change
+  useEffect(() => {
+    storageService.saveSnippets(snippets);
+  }, [snippets]);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
@@ -169,8 +175,53 @@ function AppContent() {
     setIsDetailModalOpen(true);
   };
 
+  // Export JSON backup
+  const handleExportJSON = () => {
+    storageService.exportJSON(snippets);
+    toast.success(`Exported ${snippets.length} snippets to JSON backup!`);
+  };
+
+  // Trigger file import dialog
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Process JSON file import
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const importedSnippets = await storageService.importJSON(file);
+      // Merge with existing avoiding exact ID collisions
+      const existingIds = new Set(snippets.map((s) => s.id));
+      const sanitized = importedSnippets.map((item) => ({
+        ...item,
+        id: existingIds.has(item.id) ? generateSnippetId() : item.id,
+      }));
+
+      const merged = [...sanitized, ...snippets];
+      setSnippets(merged);
+      toast.success(`Successfully imported ${sanitized.length} snippets!`);
+    } catch (err) {
+      toast.error(err.message || 'Failed to import JSON file');
+    } finally {
+      // Reset input value
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <>
+      {/* Hidden file input for JSON import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,application/json"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       <AppLayout
         activeTab={activeTab}
         onSelectTab={(tab) => {
@@ -184,6 +235,8 @@ function AppContent() {
         onOpenSearch={() => setIsSearchModalOpen(true)}
         totalSnippets={snippets.length}
         favoritesCount={favoritesCount}
+        onExportJSON={handleExportJSON}
+        onImportClick={handleImportClick}
         theme={theme}
         onToggleTheme={toggleTheme}
         pageTitle={
@@ -216,8 +269,8 @@ function AppContent() {
               setActiveTab('snippets');
             }}
             onCopyCode={handleCopyCode}
-            onExportData={() => console.log('Export')}
-            onImportClick={() => console.log('Import')}
+            onExportData={handleExportJSON}
+            onImportClick={handleImportClick}
           />
         )}
 
