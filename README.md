@@ -1,5 +1,9 @@
 # CodeSnippet Vault
 
+<div align="center">
+
+<img src="./docs/screenshots/hero_banner.jpg" alt="CodeSnippet Vault Hero Banner" width="100%" style="border-radius: 14px; margin-bottom: 20px; box-shadow: 0 12px 36px rgba(0,0,0,0.4);" />
+
 ```text
    ____          _        _____       _                    _     __      __             _ _   
   / ____|        | |      / ____|     (_)                  | |    \ \    / /            | | |  
@@ -11,100 +15,158 @@
                                         |_|   |_|                                             
 ```
 
-<div align="center">
+### Modern Minimalist Developer Code Snippet Manager
+*A high-velocity blend of GitHub Gists, VS Code, Raycast, and Linear.*
 
 [![React](https://img.shields.io/badge/React-18%2F19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.x-black?style=for-the-badge&logo=framer&logoColor=blue)](https://www.framer.com/motion/)
-[![Prism.js](https://img.shields.io/badge/Prism.js-Syntax_Highlighting-orange?style=for-the-badge&logo=javascript&logoColor=white)](https://prismjs.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Status](https://img.shields.io/badge/Build-Production_Ready-brightgreen?style=for-the-badge)]()
+[![Prism.js](https://img.shields.io/badge/Prism.js-Syntax_Tokens-orange?style=for-the-badge&logo=javascript&logoColor=white)](https://prismjs.com/)
+[![Local Storage](https://img.shields.io/badge/Storage-100%25_Offline-10B981?style=for-the-badge&logo=databricks&logoColor=white)]()
+[![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 
-**A minimalist, high-velocity developer productivity tool for storing, organizing, searching, and managing code snippets.**  
-*Crafted as a modern blend of GitHub Gists, VS Code, Raycast, and Linear.*
-
-[Live Demo](#live-demo) • [Key Features](#-core-features) • [Keyboard Shortcuts](#-keyboard-shortcuts) • [Architecture](#-architecture--folder-structure) • [Getting Started](#-getting-started)
+[Visual Showcase](#-visual-showcase) • [Key Features](#-core-capabilities) • [Keyboard Shortcuts](#-keyboard-shortcuts) • [Architecture](#-architecture--folder-structure) • [Installation](#-getting-started)
 
 </div>
 
 ---
 
-## 🌟 Executive Summary
+## 🌟 Overview
 
-**CodeSnippet Vault** is an offline-first developer productivity web application tailored for software engineers, competitive programmers, and technical interview candidates. Designed with strict developer aesthetics, it marries the distraction-free minimalism of **Linear**, the command-driven velocity of **Raycast**, and the syntax fidelity of **VS Code**.
+**CodeSnippet Vault** is an offline-first developer productivity web application designed for software engineers, competitive programmers, and technical interview candidates. Designed with strict developer aesthetics, it marries the distraction-free minimalism of **Linear**, the command-driven velocity of **Raycast**, and the syntax fidelity of **VS Code**.
 
 Every snippet is stored directly in your browser's Local Storage — meaning zero external dependencies, zero latency, and absolute privacy with 100% offline capability.
 
 ---
 
-## 🚀 Core Features
+## 📸 Visual Showcase
+
+### 📊 Developer Analytics Dashboard
+Comprehensive overview with real-time statistics cards, interactive language distribution progress bar, recent code activity stream, and deep vault insights (lines of code, characters, average snippet length).
+
+<div align="center">
+  <img src="./docs/screenshots/dashboard.png" alt="Developer Analytics Dashboard" width="100%" style="border-radius: 10px; border: 1px solid #23293d;" />
+</div>
+
+<br/>
+
+### ⚡ Raycast-Style Spotlight Search (`Ctrl + K` / `Ctrl + F`)
+Instant full-text multi-token search modal across titles, descriptions, tags, languages, and actual source code with arrow-key keyboard navigation.
+
+<div align="center">
+  <img src="./docs/screenshots/command_palette.png" alt="Raycast Command Palette" width="100%" style="border-radius: 10px; border: 1px solid #23293d;" />
+</div>
+
+<br/>
+
+### 💻 Snippet Library & Multi-Stack Filtering
+Browse snippets in grid or compact list view. Filter instantly by programming language (JavaScript, TypeScript, Python, React, SQL, C++, Java, Node.js) or search query.
+
+<div align="center">
+  <img src="./docs/screenshots/snippets.png" alt="All Snippets Library" width="100%" style="border-radius: 10px; border: 1px solid #23293d;" />
+</div>
+
+<br/>
+
+### 🔍 Full Code Inspector & Metadata Viewer
+Full-screen code inspector featuring syntax highlighting, line numbers gutter, soft tab support, word-wrap toggle, code metrics, and raw file download (`.jsx`, `.py`, `.sql`, `.cpp`).
+
+<div align="center">
+  <img src="./docs/screenshots/snippet_detail.png" alt="Snippet Detail Inspector" width="100%" style="border-radius: 10px; border: 1px solid #23293d;" />
+</div>
+
+<br/>
+
+### 🏷️ Topic Cloud & Tag Explorer
+Categorize and filter snippets across data structures, algorithms, interviews, frontend utilities, and backend APIs.
+
+<div align="center">
+  <img src="./docs/screenshots/tags_explorer.png" alt="Tags Explorer and Cloud" width="100%" style="border-radius: 10px; border: 1px solid #23293d;" />
+</div>
+
+<br/>
+
+### ☀️ Clean Slate Light Theme
+High-contrast daylight theme with automated system preference detection and smooth theme morphing.
+
+<div align="center">
+  <img src="./docs/screenshots/light_mode.png" alt="Clean Slate Light Theme" width="100%" style="border-radius: 10px; border: 1px solid #e2e8f0;" />
+</div>
+
+---
+
+## 🚀 Core Capabilities
+
+<table>
+<tr>
+<td width="50%">
 
 ### 💻 Snippet Management
-* **Instant Creation & Editing:** Create and edit snippets with syntax-highlighted editor inputs, indentation support (`Tab` key creates 2 spaces), and keyboard triggers (`Ctrl + Enter` to save).
-* **One-Click Duplication:** Instantly clone any snippet with metadata preservation.
-* **Safe Deletion:** Red-flagged confirmation modal preventing accidental data loss.
-* **Raw Code Download:** Export individual snippets directly as source files (`.js`, `.ts`, `.py`, `.sql`, `.cpp`, `.java`, etc.).
+* **Instant Creation & Editing:** Form modal with live line counter, tab key indenting (2 spaces), and keyboard shortcuts (<kbd>Ctrl</kbd> + <kbd>Enter</kbd>).
+* **One-Click Duplication:** Instantly clone snippets with preserved tags and language settings.
+* **Safe Deletion:** Destructive modal confirmation prevents accidental data loss.
+* **Native File Export:** Download raw code files directly with authentic extensions (`.jsx`, `.py`, `.sql`, etc.).
 
-### 🔍 Real-Time Multi-Token Search & Command Palette
-* **Fuzzy Corpus Matching:** Search simultaneously across titles, descriptions, code syntax, tags, and languages.
-* **Raycast-Style Command Palette (`Ctrl + K` / `Ctrl + F`):** Instant spotlight modal with keyboard navigation (`↑`, `↓`, `Enter`) for split-second snippet retrieval.
-* **Instant Filtering:** Zero page reloads; updates dynamically at 60 FPS.
+</td>
+<td width="50%">
 
-### 🎨 VS Code Syntax Highlighting & Line Numbers
-* **Integrated Prism Grammars:** Full lexical tokenization for JavaScript, TypeScript, Python, React JSX, SQL, HTML, CSS, C++, Java, and Node.js, with custom language support.
-* **Line Number Gutters:** Clean, unselectable gutter numbers matching modern dark IDE themes.
-* **Word Wrap Toggle:** Seamlessly switch between fixed horizontal scrolling and responsive word wrapping.
+### 🔍 Real-Time Search & Spotlight
+* **Multi-Token Fuzzy Search:** Real-time matching across titles, descriptions, code, tags, and languages.
+* **Command Palette (<kbd>Ctrl</kbd> + <kbd>K</kbd>):** Fast spotlight search with keyboard navigation (<kbd>↑</kbd>, <kbd>↓</kbd>, <kbd>Enter</kbd>).
+* **Instant Language Tabs:** Filter by active programming languages with dynamic count pills.
 
-### 🏷️ Multi-Tag Explorer & Categorization
-* **Dynamic Tag Clouds:** Real-time frequency analytics for topics such as `DSA`, `Algorithms`, `React`, `Hooks`, `SQL`, `Interview`, and `API`.
-* **Intersection Filtering:** Filter snippets by combining tag chips with search queries and language selectors.
+</td>
+</tr>
+<tr>
+<td width="50%">
 
-### 📊 Modern Dashboard Analytics
-* **Metric Cards:** Real-time count of total snippets, favorites, active languages, and tags.
+### 📊 Developer Analytics Dashboard
+* **Metrics Grid:** Total Snippets, Pinned Favorites, Active Languages, and Tags.
 * **Language Distribution Bar:** Multi-segment progress visualizer showing your vault's stack distribution.
-* **Deep Vault Insights:** Aggregated metrics for total lines of code stored, total characters, average snippet length, and dominant tags.
-* **Recent Activity Feed:** Instant timeline of latest modified code patterns.
+* **Vault Insights:** Live aggregated counts for total lines of code stored, total characters, average snippet length, and dominant tags.
 
-### 💾 100% Local Storage & Data Mobility
-* **Zero Telemetry / Offline-First:** Operates completely in the client's browser with no external servers.
-* **JSON Export:** Download your entire repository as a structured, portable backup file (`.json`).
-* **JSON Import:** Restore or merge backups with built-in schema validation and ID deduplication.
+</td>
+<td width="50%">
 
-### 🌓 Developer Themes (Dark / Light)
-* **VS Code Obsidian Dark Theme:** Default dark mode inspired by VS Code and Linear with glowing accents.
-* **Modern Slate Light Theme:** High-contrast daylight theme.
-* **System Preference Detection:** Automatically detects `prefers-color-scheme` with manual toggle fallback.
+### 💾 100% Offline-First & Data Mobility
+* **HTML5 Local Storage:** Fast local persistence with zero server latency and total privacy.
+* **JSON Backup Export:** Download your entire repository as a portable `.json` backup file.
+* **JSON Restore & Merge:** Import backup archives with automated schema validation and ID deduplication.
 
-### 📱 Responsive & Touch Optimized
-* **Adaptive Navigation:** Collapsible sidebar on desktop, slide-out drawer on tablets, and thumb-friendly bottom navigation bar on mobile devices.
-* **Smooth Framer Motion Interactions:** Subtle page fades, modal zoom-in transitions, and interactive toast notifications.
+</td>
+</tr>
+</table>
 
 ---
 
 ## ⌨️ Keyboard Shortcuts
 
+Speed up your developer workflow with first-class keyboard navigation:
+
 | Shortcut | Action | Scope |
 | :--- | :--- | :--- |
 | <kbd>Ctrl</kbd> + <kbd>N</kbd> / <kbd>⌘</kbd> + <kbd>N</kbd> | Open New Snippet Creation Modal | Global |
-| <kbd>Ctrl</kbd> + <kbd>K</kbd> / <kbd>⌘</kbd> + <kbd>K</kbd> | Open Command Palette / Global Search | Global |
-| <kbd>Ctrl</kbd> + <kbd>F</kbd> / <kbd>⌘</kbd> + <kbd>F</kbd> | Focus Search Engine | Global |
-| <kbd>Ctrl</kbd> + <kbd>Enter</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> | Submit & Save Snippet Form | Modal Editor |
-| <kbd>Tab</kbd> | Insert 2-Space Soft Tab | Code Editor |
-| <kbd>Esc</kbd> | Close Modal / Clear Search | Modals & Search |
-| <kbd>↑</kbd> / <kbd>↓</kbd> | Navigate Search Results | Command Palette |
-| <kbd>Enter</kbd> | Select / Inspect Snippet | Command Palette |
+| <kbd>Ctrl</kbd> + <kbd>K</kbd> / <kbd>⌘</kbd> + <kbd>K</kbd> | Open Command Palette / Spotlight Search | Global |
+| <kbd>Ctrl</kbd> + <kbd>F</kbd> / <kbd>⌘</kbd> + <kbd>F</kbd> | Focus Search Engine Bar | Global |
+| <kbd>Ctrl</kbd> + <kbd>Enter</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> | Submit and Save Snippet Form | Modal Editor |
+| <kbd>Tab</kbd> | Insert 2-Space Soft Tab Indentation | Code Editor |
+| <kbd>Esc</kbd> | Close Active Modal / Dismiss Search | Modals & Overlays |
+| <kbd>↑</kbd> / <kbd>↓</kbd> | Navigate Search Result Items | Command Palette |
+| <kbd>Enter</kbd> | Inspect Selected Snippet | Command Palette |
 
 ---
 
 ## 📁 Architecture & Folder Structure
 
+Built using a scalable component architecture with modular design tokens:
+
 ```text
 src/
-├── assets/                  # Static media, icons, and SVG emblems
+├── assets/                  # Brand SVG emblems and media
 ├── components/
-│   ├── common/              # Reusable atomic design system components
-│   │   ├── Badge.jsx        # Colored category and tag pills
+│   ├── common/              # Atomic design system
+│   │   ├── Badge.jsx        # Language and tag pills
 │   │   ├── Button.jsx       # Linear-style micro-animated buttons
 │   │   ├── Card.jsx         # Glassmorphic container with glow borders
 │   │   ├── CodeViewer.jsx   # Syntax-highlighted code block with line gutters
@@ -112,33 +174,33 @@ src/
 │   │   ├── ConfirmModal.jsx # Destructive action confirmation dialog
 │   │   ├── EmptyState.jsx   # Friendly empty illustrations & CTAs
 │   │   ├── Input.jsx        # Monospace & sans-serif inputs with focus rings
-│   │   ├── PageTransition.jsx # Framer Motion subtle route transitions
+│   │   ├── PageTransition.jsx # Framer Motion route transitions
 │   │   ├── SearchBar.jsx    # Real-time search bar with clear button
 │   │   ├── ThemeToggle.jsx  # Dark/Light theme morphing toggle
-│   │   └── Toast.jsx        # Notification popups
+│   │   └── Toast.jsx        # Animated notification popups
 │   ├── dashboard/           # Analytics & metric widgets
-│   │   ├── FavoritesWidget.jsx     # Quick access favorite snippets
+│   │   ├── FavoritesWidget.jsx     # Pinned favorite snippets
 │   │   ├── LanguageDistribution.jsx# Stack percentage breakdown
 │   │   ├── QuickActions.jsx        # One-click workflow triggers
 │   │   ├── RecentSnippets.jsx      # Latest activity feed
 │   │   ├── StatCard.jsx            # Individual stat metric card
 │   │   ├── StatsGrid.jsx           # 4-column metric grid
 │   │   └── VaultInsights.jsx       # Code volume and line counter analytics
-│   ├── forms/               # Creation and editing form modals
+│   ├── forms/               # Creation and editing modals
 │   │   ├── SnippetForm.jsx         # Form with live line counting & tab indenting
 │   │   └── SnippetFormModal.jsx    # Accessible modal wrapper
-│   ├── layout/              # Responsive application shell
+│   ├── layout/              # Responsive shell
 │   │   ├── AppLayout.jsx           # Shell container with sticky navbar
 │   │   ├── MobileBottomNav.jsx     # Mobile bottom drawer bar
 │   │   ├── Navbar.jsx              # Command trigger, theme toggle, and actions
 │   │   └── Sidebar.jsx             # Collapsible primary navigation
-│   └── snippets/            # Snippet listing and display components
+│   └── snippets/            # Snippet repository components
 │       ├── FilterBar.jsx           # Language filter pills and sorters
 │       ├── SnippetCard.jsx         # Grid & List view card with code preview
 │       └── SnippetDetailModal.jsx  # Fullscreen code inspector & file exporter
 ├── constants/               # Supported languages, themes, and storage keys
 ├── context/                 # React Contexts (ToastContext, ThemeContext)
-├── data/                    # Initial curated seed snippets
+├── data/                    # Curated starter snippets (Hooks, Cache, CTE, DSA)
 ├── hooks/                   # Custom React hooks (useLocalStorage)
 ├── pages/                   # Views (Dashboard, Snippets, Favorites, Tags, Languages)
 ├── services/                # LocalStorage persistence, validation, JSON import/export
@@ -158,6 +220,7 @@ src/
 * **Iconography:** React Icons (Feather Icons & VS Code Icons)
 * **Syntax Highlighting:** Prism.js (Custom VS Code dark syntax palette)
 * **Storage Engine:** HTML5 Local Storage with JSON Backup / Restore
+* **Code Splitting:** Manual chunking (`react-vendor`, `syntax-vendor`, `animation-vendor`, `icons-vendor`)
 * **Package Manager:** NPM
 
 ---
@@ -200,7 +263,7 @@ Ensure you have [Node.js](https://nodejs.org/) installed (v18 or higher recommen
 
 ## 🗺️ Future Roadmap
 
-- [ ] **Gist Synchronization:** Optional two-way synchronization with GitHub Gists.
+- [ ] **Gist Synchronization:** Two-way synchronization with GitHub Gists.
 - [ ] **Folder Collections:** Multi-level folder nesting for large engineering teams.
 - [ ] **Snippet Run Sandbox:** Integrated WebAssembly runtime to execute JavaScript/Python snippets in-browser.
 - [ ] **OCR Code Scanner:** Paste an image or screenshot of code to automatically extract text into a snippet.
@@ -221,7 +284,7 @@ Contributions make the developer community an amazing place to learn, inspire, a
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
 
 ---
 
@@ -229,6 +292,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Alamin Mondal**  
 * GitHub: [@AlaminM01](https://github.com/AlaminM01)
+* Repository: [CodeSnippet-Vault](https://github.com/AlaminM01/CodeSnippet-Vault)
 * Email: [alaminmondal297@outlook.com](mailto:alaminmondal297@outlook.com)
 
 ---

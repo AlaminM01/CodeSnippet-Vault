@@ -1,29 +1,17 @@
 import React, { useMemo } from 'react';
 import Prism from 'prismjs';
 
-// Import essential Prism language grammars
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-jsx';
-import 'prismjs/components/prism-tsx';
-import 'prismjs/components/prism-sql';
-import 'prismjs/components/prism-css';
-import 'prismjs/components/prism-c';
-import 'prismjs/components/prism-cpp';
-import 'prismjs/components/prism-java';
-
-// Language identifier mapping for Prism
+// Language identifier mapping for Prism built-ins
 const PRISM_LANG_MAP = {
   javascript: 'javascript',
-  typescript: 'typescript',
-  python: 'python',
-  react: 'jsx',
-  sql: 'sql',
+  typescript: 'javascript',
+  python: 'clike',
+  react: 'javascript',
+  sql: 'clike',
   css: 'css',
   html: 'html',
-  cpp: 'cpp',
-  java: 'java',
+  cpp: 'clike',
+  java: 'clike',
   nodejs: 'javascript',
 };
 
@@ -37,7 +25,7 @@ export function CodeViewer({
   showLineNumbers = true,
   className = '',
 }) {
-  const prismLang = PRISM_LANG_MAP[language.toLowerCase()] || 'javascript';
+  const prismLang = PRISM_LANG_MAP[language?.toLowerCase()] || 'javascript';
 
   const highlightedHtml = useMemo(() => {
     let targetCode = code;
@@ -52,7 +40,6 @@ export function CodeViewer({
       const grammar = Prism.languages[prismLang] || Prism.languages.javascript;
       return Prism.highlight(targetCode, grammar, prismLang);
     } catch (e) {
-      // Fallback to plain text escaping
       return targetCode
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
