@@ -3,6 +3,7 @@ import { AppLayout } from './components/layout';
 import { DashboardPage, SnippetsPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
+import { ConfirmModal } from './components/common';
 import { INITIAL_SNIPPETS } from './data/initialSnippets';
 import { generateSnippetId } from './utils/formatters';
 
@@ -16,6 +17,8 @@ export default function App() {
   const [editingSnippet, setEditingSnippet] = useState(null);
   const [selectedSnippet, setSelectedSnippet] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [snippetToDelete, setSnippetToDelete] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const favoritesCount = snippets.filter((s) => s.isFavorite).length;
 
@@ -59,7 +62,6 @@ export default function App() {
     const now = new Date().toISOString();
 
     if (editingSnippet) {
-      // Update existing snippet
       const updatedSnippet = {
         ...editingSnippet,
         ...formData,
@@ -75,7 +77,6 @@ export default function App() {
       }
       setEditingSnippet(null);
     } else {
-      // Create new snippet
       const newSnippet = {
         id: generateSnippetId(),
         ...formData,
@@ -84,6 +85,24 @@ export default function App() {
       };
       setSnippets((prev) => [newSnippet, ...prev]);
     }
+  };
+
+  // Request Delete workflow
+  const handleRequestDelete = (snippet) => {
+    setSnippetToDelete(snippet);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Confirm Delete
+  const handleConfirmDelete = () => {
+    if (!snippetToDelete) return;
+    setSnippets((prev) => prev.filter((s) => s.id !== snippetToDelete.id));
+
+    if (selectedSnippet && selectedSnippet.id === snippetToDelete.id) {
+      setSelectedSnippet(null);
+      setIsDetailModalOpen(false);
+    }
+    setSnippetToDelete(null);
   };
 
   // Duplicate snippet workflow
@@ -156,7 +175,7 @@ export default function App() {
             snippets={snippets}
             onSelectSnippet={handleSelectSnippet}
             onEditSnippet={handleOpenEdit}
-            onDeleteSnippet={(snip) => console.log('Delete snippet:', snip)}
+            onDeleteSnippet={handleRequestDelete}
             onDuplicateSnippet={handleDuplicateSnippet}
             onToggleFavorite={handleToggleFavorite}
             onCreateSnippet={handleOpenCreate}
@@ -181,9 +200,23 @@ export default function App() {
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
         onEdit={handleOpenEdit}
-        onDelete={(snip) => console.log('Delete from detail:', snip)}
+        onDelete={handleRequestDelete}
         onDuplicate={handleDuplicateSnippet}
         onToggleFavorite={handleToggleFavorite}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        title="Delete Code Snippet"
+        message={`Are you sure you want to permanently delete "${snippetToDelete?.title}"? This action cannot be reversed.`}
+        confirmLabel="Delete Snippet"
+        isDanger={true}
+        onConfirm={handleConfirmDelete}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSnippetToDelete(null);
+        }}
       />
     </>
   );

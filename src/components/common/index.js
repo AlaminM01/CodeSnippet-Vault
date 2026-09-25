@@ -4,3 +4,4 @@ export * from './Input';
 export * from './Card';
 export * from './EmptyState';
 export * from './CodeViewer';
+export * from './ConfirmModal';
