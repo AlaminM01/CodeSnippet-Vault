@@ -2,18 +2,16 @@ import React from 'react';
 import { 
   FiSearch, 
   FiPlus, 
-  FiSun, 
-  FiMoon, 
   FiMenu, 
   FiDownload, 
-  FiUpload,
-  FiCommand
+  FiUpload, 
+  FiCommand 
 } from 'react-icons/fi';
 import { Button } from '../common/Button';
+import { ThemeToggle } from '../common/ThemeToggle';
 
 /**
- * Top Navigation Bar Component
- * VS Code / Raycast top-bar aesthetic
+ * Top Navigation Bar Component with Theme Toggle integration
  */
 export function Navbar({
   pageTitle = 'Dashboard',
@@ -23,8 +21,6 @@ export function Navbar({
   onExportJSON,
   onImportClick,
   onToggleMobileMenu,
-  theme = 'dark',
-  onToggleTheme,
 }) {
   return (
     <header className="h-16 border-b border-dark-border/60 dark:border-dark-border/60 light:border-light-border bg-dark-bg/80 dark:bg-dark-bg/80 light:bg-white/80 backdrop-blur-md px-4 lg:px-8 flex items-center justify-between gap-4 sticky top-0 z-10 select-none">
@@ -106,19 +102,8 @@ export function Navbar({
           </button>
         )}
 
-        {/* Theme Toggle */}
-        <button
-          type="button"
-          onClick={onToggleTheme}
-          className="p-2 rounded-lg text-dark-muted hover:text-dark-text hover:bg-white/5 light:text-light-muted light:hover:text-light-text light:hover:bg-slate-100 transition-colors"
-          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-        >
-          {theme === 'dark' ? (
-            <FiSun className="text-base text-amber-400 hover:rotate-45 transition-transform" />
-          ) : (
-            <FiMoon className="text-base text-brand-600 hover:-rotate-12 transition-transform" />
-          )}
-        </button>
+        {/* Dedicated Theme Toggle Component */}
+        <ThemeToggle />
 
         {/* New Snippet Button */}
         <Button

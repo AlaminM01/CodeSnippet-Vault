@@ -5,6 +5,7 @@ import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
 import { ConfirmModal, CommandPaletteModal } from './components/common';
 import { ToastProvider, useToast } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { storageService } from './services/storageService';
 import { generateSnippetId } from './utils/formatters';
 import { copyToClipboard } from './utils/clipboard';
@@ -12,7 +13,6 @@ import { copyToClipboard } from './utils/clipboard';
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [snippets, setSnippets] = useState(() => storageService.getSnippets());
-  const [theme, setTheme] = useState('dark');
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('all');
   const [selectedTagFilter, setSelectedTagFilter] = useState(null);
 
@@ -34,16 +34,6 @@ function AppContent() {
   useEffect(() => {
     storageService.saveSnippets(snippets);
   }, [snippets]);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-    }
-  };
 
   // Keyboard shortcuts: Ctrl + N (new), Ctrl + K or Ctrl + F (search)
   useEffect(() => {
@@ -193,7 +183,6 @@ function AppContent() {
 
     try {
       const importedSnippets = await storageService.importJSON(file);
-      // Merge with existing avoiding exact ID collisions
       const existingIds = new Set(snippets.map((s) => s.id));
       const sanitized = importedSnippets.map((item) => ({
         ...item,
@@ -206,7 +195,6 @@ function AppContent() {
     } catch (err) {
       toast.error(err.message || 'Failed to import JSON file');
     } finally {
-      // Reset input value
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -237,8 +225,6 @@ function AppContent() {
         favoritesCount={favoritesCount}
         onExportJSON={handleExportJSON}
         onImportClick={handleImportClick}
-        theme={theme}
-        onToggleTheme={toggleTheme}
         pageTitle={
           activeTab === 'dashboard'
             ? 'Dashboard Overview'
@@ -384,8 +370,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ToastProvider>
-      <AppContent />
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

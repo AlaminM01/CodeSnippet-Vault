@@ -8,3 +8,4 @@ export * from './ConfirmModal';
 export * from './SearchBar';
 export * from './CommandPaletteModal';
 export * from './Toast';
+export * from './ThemeToggle';
