@@ -1,4 +1,1 @@
-/**
- * Application Contexts
- */
-export const CONTEXTS = 'contexts';
+export * from './ToastContext';

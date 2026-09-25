@@ -4,10 +4,12 @@ import { DashboardPage, SnippetsPage, LanguagesPage, FavoritesPage } from './pag
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
 import { ConfirmModal, CommandPaletteModal } from './components/common';
+import { ToastProvider, useToast } from './context/ToastContext';
 import { INITIAL_SNIPPETS } from './data/initialSnippets';
 import { generateSnippetId } from './utils/formatters';
+import { copyToClipboard } from './utils/clipboard';
 
-export default function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [snippets, setSnippets] = useState(INITIAL_SNIPPETS);
   const [theme, setTheme] = useState('dark');
@@ -21,6 +23,8 @@ export default function App() {
   const [snippetToDelete, setSnippetToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  const toast = useToast();
 
   const favoritesCount = snippets.filter((s) => s.isFavorite).length;
 
@@ -80,6 +84,7 @@ export default function App() {
       if (selectedSnippet && selectedSnippet.id === editingSnippet.id) {
         setSelectedSnippet(updatedSnippet);
       }
+      toast.success('Snippet updated successfully!');
       setEditingSnippet(null);
     } else {
       const newSnippet = {
@@ -89,6 +94,7 @@ export default function App() {
         updatedAt: now,
       };
       setSnippets((prev) => [newSnippet, ...prev]);
+      toast.success('Snippet created successfully!');
     }
   };
 
@@ -107,6 +113,7 @@ export default function App() {
       setSelectedSnippet(null);
       setIsDetailModalOpen(false);
     }
+    toast.info(`Deleted "${snippetToDelete.title}"`);
     setSnippetToDelete(null);
   };
 
@@ -121,17 +128,37 @@ export default function App() {
       updatedAt: now,
     };
     setSnippets((prev) => [duplicated, ...prev]);
+    toast.success('Snippet duplicated!');
   };
 
   // Toggle favorite status
   const handleToggleFavorite = (id) => {
     setSnippets((prev) =>
-      prev.map((snip) =>
-        snip.id === id ? { ...snip, isFavorite: !snip.isFavorite } : snip
-      )
+      prev.map((snip) => {
+        if (snip.id === id) {
+          const nextFav = !snip.isFavorite;
+          if (nextFav) {
+            toast.success(`Added "${snip.title}" to favorites`);
+          } else {
+            toast.info(`Removed "${snip.title}" from favorites`);
+          }
+          return { ...snip, isFavorite: nextFav };
+        }
+        return snip;
+      })
     );
     if (selectedSnippet && selectedSnippet.id === id) {
       setSelectedSnippet((prev) => ({ ...prev, isFavorite: !prev.isFavorite }));
+    }
+  };
+
+  // Copy code with toast
+  const handleCopyCode = async (code) => {
+    const success = await copyToClipboard(code);
+    if (success) {
+      toast.success('Code copied to clipboard!');
+    } else {
+      toast.error('Failed to copy to clipboard');
     }
   };
 
@@ -177,6 +204,7 @@ export default function App() {
             }}
             onCreateSnippet={handleOpenCreate}
             onSelectSnippet={handleSelectSnippet}
+            onCopyCode={handleCopyCode}
             onExportData={() => console.log('Export')}
             onImportClick={() => console.log('Import')}
           />
@@ -193,6 +221,7 @@ export default function App() {
             onDuplicateSnippet={handleDuplicateSnippet}
             onToggleFavorite={handleToggleFavorite}
             onCreateSnippet={handleOpenCreate}
+            onCopyCode={handleCopyCode}
           />
         )}
 
@@ -204,6 +233,7 @@ export default function App() {
             onDeleteSnippet={handleRequestDelete}
             onDuplicateSnippet={handleDuplicateSnippet}
             onToggleFavorite={handleToggleFavorite}
+            onCopyCode={handleCopyCode}
             onNavigateToAll={() => setActiveTab('snippets')}
           />
         )}
@@ -242,6 +272,7 @@ export default function App() {
         onDelete={handleRequestDelete}
         onDuplicate={handleDuplicateSnippet}
         onToggleFavorite={handleToggleFavorite}
+        onCopy={handleCopyCode}
       />
 
       {/* Delete Confirmation Modal */}
@@ -266,5 +297,13 @@ export default function App() {
         onSelectSnippet={handleSelectSnippet}
       />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 }
