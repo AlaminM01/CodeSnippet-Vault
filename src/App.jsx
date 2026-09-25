@@ -10,7 +10,10 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [snippets, setSnippets] = useState(INITIAL_SNIPPETS);
   const [theme, setTheme] = useState('dark');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Modal States
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingSnippet, setEditingSnippet] = useState(null);
   const [selectedSnippet, setSelectedSnippet] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -31,28 +34,75 @@ export default function App() {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
         e.preventDefault();
-        setIsCreateModalOpen(true);
+        handleOpenCreate();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Handle snippet creation
-  const handleCreateSnippet = (formData) => {
-    const newSnippet = {
+  // Open Create Modal
+  const handleOpenCreate = () => {
+    setEditingSnippet(null);
+    setIsFormModalOpen(true);
+  };
+
+  // Open Edit Modal
+  const handleOpenEdit = (snippet) => {
+    setEditingSnippet(snippet);
+    setIsDetailModalOpen(false);
+    setIsFormModalOpen(true);
+  };
+
+  // Handle Save (both Create and Edit)
+  const handleSaveSnippet = (formData) => {
+    const now = new Date().toISOString();
+
+    if (editingSnippet) {
+      // Update existing snippet
+      const updatedSnippet = {
+        ...editingSnippet,
+        ...formData,
+        updatedAt: now,
+      };
+
+      setSnippets((prev) =>
+        prev.map((s) => (s.id === editingSnippet.id ? updatedSnippet : s))
+      );
+
+      if (selectedSnippet && selectedSnippet.id === editingSnippet.id) {
+        setSelectedSnippet(updatedSnippet);
+      }
+      setEditingSnippet(null);
+    } else {
+      // Create new snippet
+      const newSnippet = {
+        id: generateSnippetId(),
+        ...formData,
+        createdAt: now,
+        updatedAt: now,
+      };
+      setSnippets((prev) => [newSnippet, ...prev]);
+    }
+  };
+
+  // Duplicate snippet workflow
+  const handleDuplicateSnippet = (snippet) => {
+    const now = new Date().toISOString();
+    const duplicated = {
+      ...snippet,
       id: generateSnippetId(),
-      ...formData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      title: `${snippet.title} (Copy)`,
+      createdAt: now,
+      updatedAt: now,
     };
-    setSnippets([newSnippet, ...snippets]);
+    setSnippets((prev) => [duplicated, ...prev]);
   };
 
   // Toggle favorite status
   const handleToggleFavorite = (id) => {
-    setSnippets(
-      snippets.map((snip) =>
+    setSnippets((prev) =>
+      prev.map((snip) =>
         snip.id === id ? { ...snip, isFavorite: !snip.isFavorite } : snip
       )
     );
@@ -72,7 +122,7 @@ export default function App() {
       <AppLayout
         activeTab={activeTab}
         onSelectTab={setActiveTab}
-        onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        onOpenCreateModal={handleOpenCreate}
         onOpenSearch={() => console.log('Open Search')}
         totalSnippets={snippets.length}
         favoritesCount={favoritesCount}
@@ -95,7 +145,7 @@ export default function App() {
           <DashboardPage
             snippets={snippets}
             onNavigate={(tab) => setActiveTab(tab)}
-            onCreateSnippet={() => setIsCreateModalOpen(true)}
+            onCreateSnippet={handleOpenCreate}
             onExportData={() => console.log('Export')}
             onImportClick={() => console.log('Import')}
           />
@@ -105,20 +155,24 @@ export default function App() {
           <SnippetsPage
             snippets={snippets}
             onSelectSnippet={handleSelectSnippet}
-            onEditSnippet={(snip) => console.log('Edit snippet:', snip)}
+            onEditSnippet={handleOpenEdit}
             onDeleteSnippet={(snip) => console.log('Delete snippet:', snip)}
-            onDuplicateSnippet={(snip) => console.log('Duplicate snippet:', snip)}
+            onDuplicateSnippet={handleDuplicateSnippet}
             onToggleFavorite={handleToggleFavorite}
-            onCreateSnippet={() => setIsCreateModalOpen(true)}
+            onCreateSnippet={handleOpenCreate}
           />
         )}
       </AppLayout>
 
-      {/* Snippet Creation Modal */}
+      {/* Snippet Form Modal (Handles both Create and Edit) */}
       <SnippetFormModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateSnippet}
+        isOpen={isFormModalOpen}
+        initialData={editingSnippet}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setEditingSnippet(null);
+        }}
+        onSubmit={handleSaveSnippet}
       />
 
       {/* Snippet Detail Modal */}
@@ -126,9 +180,9 @@ export default function App() {
         snippet={selectedSnippet}
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        onEdit={(snip) => console.log('Edit from detail:', snip)}
+        onEdit={handleOpenEdit}
         onDelete={(snip) => console.log('Delete from detail:', snip)}
-        onDuplicate={(snip) => console.log('Duplicate from detail:', snip)}
+        onDuplicate={handleDuplicateSnippet}
         onToggleFavorite={handleToggleFavorite}
       />
     </>
