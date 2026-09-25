@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AppLayout } from './components/layout';
 import { DashboardPage, SnippetsPage } from './pages';
 import { SnippetFormModal } from './components/forms';
+import { SnippetDetailModal } from './components/snippets';
 import { INITIAL_SNIPPETS } from './data/initialSnippets';
 import { generateSnippetId } from './utils/formatters';
 
@@ -10,6 +11,8 @@ export default function App() {
   const [snippets, setSnippets] = useState(INITIAL_SNIPPETS);
   const [theme, setTheme] = useState('dark');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedSnippet, setSelectedSnippet] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const favoritesCount = snippets.filter((s) => s.isFavorite).length;
 
@@ -53,6 +56,15 @@ export default function App() {
         snip.id === id ? { ...snip, isFavorite: !snip.isFavorite } : snip
       )
     );
+    if (selectedSnippet && selectedSnippet.id === id) {
+      setSelectedSnippet((prev) => ({ ...prev, isFavorite: !prev.isFavorite }));
+    }
+  };
+
+  // Open detail modal
+  const handleSelectSnippet = (snippet) => {
+    setSelectedSnippet(snippet);
+    setIsDetailModalOpen(true);
   };
 
   return (
@@ -77,7 +89,7 @@ export default function App() {
             ? 'Tags & Categories'
             : 'Languages'
         }
-        pageDescription="Manage, organize, and search your code repository"
+        pageDescription="Manage, organize, and inspect your code repository"
       >
         {activeTab === 'dashboard' && (
           <DashboardPage
@@ -92,7 +104,7 @@ export default function App() {
         {activeTab === 'snippets' && (
           <SnippetsPage
             snippets={snippets}
-            onSelectSnippet={(snip) => console.log('Selected snippet:', snip)}
+            onSelectSnippet={handleSelectSnippet}
             onEditSnippet={(snip) => console.log('Edit snippet:', snip)}
             onDeleteSnippet={(snip) => console.log('Delete snippet:', snip)}
             onDuplicateSnippet={(snip) => console.log('Duplicate snippet:', snip)}
@@ -107,6 +119,17 @@ export default function App() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSnippet}
+      />
+
+      {/* Snippet Detail Modal */}
+      <SnippetDetailModal
+        snippet={selectedSnippet}
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        onEdit={(snip) => console.log('Edit from detail:', snip)}
+        onDelete={(snip) => console.log('Delete from detail:', snip)}
+        onDuplicate={(snip) => console.log('Duplicate from detail:', snip)}
+        onToggleFavorite={handleToggleFavorite}
       />
     </>
   );
