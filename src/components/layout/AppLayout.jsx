@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
+import { MobileBottomNav } from './MobileBottomNav';
 
 /**
- * Main Application Shell Layout
+ * Main Application Shell Layout with Mobile Navigation Support
  */
 export function AppLayout({
   children,
@@ -15,8 +16,6 @@ export function AppLayout({
   favoritesCount,
   onExportJSON,
   onImportClick,
-  theme,
-  onToggleTheme,
   pageTitle,
   pageDescription,
 }) {
@@ -25,7 +24,7 @@ export function AppLayout({
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-dark-bg text-dark-text light:bg-light-bg light:text-light-text font-sans">
-      {/* Sidebar */}
+      {/* Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}
         onSelectTab={onSelectTab}
@@ -49,17 +48,22 @@ export function AppLayout({
           onExportJSON={onExportJSON}
           onImportClick={onImportClick}
           onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
-          theme={theme}
-          onToggleTheme={onToggleTheme}
         />
 
-        {/* Dynamic Page Scroll Area */}
-        <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+        {/* Dynamic Page Scroll Area with safe mobile bottom margin */}
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 lg:px-8 py-5 pb-24 lg:pb-8">
           <div className="max-w-7xl mx-auto space-y-6">
             {children}
           </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        onSelectTab={onSelectTab}
+        onOpenCreateModal={onOpenCreateModal}
+      />
     </div>
   );
 }
