@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from './components/layout';
-import { DashboardPage, SnippetsPage, LanguagesPage } from './pages';
+import { DashboardPage, SnippetsPage, LanguagesPage, FavoritesPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
 import { ConfirmModal, CommandPaletteModal } from './components/common';
@@ -141,12 +141,6 @@ export default function App() {
     setIsDetailModalOpen(true);
   };
 
-  // Select language from Languages view
-  const handleSelectLanguageFromOverview = (langId) => {
-    setSelectedLanguageFilter(langId);
-    setActiveTab('snippets');
-  };
-
   return (
     <>
       <AppLayout
@@ -182,6 +176,7 @@ export default function App() {
               if (tab === 'snippets') setSelectedLanguageFilter('all');
             }}
             onCreateSnippet={handleOpenCreate}
+            onSelectSnippet={handleSelectSnippet}
             onExportData={() => console.log('Export')}
             onImportClick={() => console.log('Import')}
           />
@@ -201,11 +196,26 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'favorites' && (
+          <FavoritesPage
+            snippets={snippets}
+            onSelectSnippet={handleSelectSnippet}
+            onEditSnippet={handleOpenEdit}
+            onDeleteSnippet={handleRequestDelete}
+            onDuplicateSnippet={handleDuplicateSnippet}
+            onToggleFavorite={handleToggleFavorite}
+            onNavigateToAll={() => setActiveTab('snippets')}
+          />
+        )}
+
         {activeTab === 'languages' && (
           <LanguagesPage
             snippets={snippets}
-            onSelectLanguage={handleSelectLanguageFromOverview}
-            onCreateSnippetInLanguage={(lang) => {
+            onSelectLanguage={(langId) => {
+              setSelectedLanguageFilter(langId);
+              setActiveTab('snippets');
+            }}
+            onCreateSnippetInLanguage={() => {
               handleOpenCreate();
             }}
           />

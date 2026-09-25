@@ -1,26 +1,29 @@
 import React from 'react';
 import { StatsGrid } from '../components/dashboard/StatsGrid';
 import { QuickActions } from '../components/dashboard/QuickActions';
-import { Card, Button, Badge } from '../components/common';
+import { FavoritesWidget } from '../components/dashboard/FavoritesWidget';
+import { Button } from '../components/common';
 import { FiPlus, FiZap } from 'react-icons/fi';
 
 /**
- * Dashboard Page View
+ * Dashboard Page View with Stats, Quick Actions, and Favorites Widget
  */
 export function DashboardPage({
   snippets = [],
   onNavigate,
   onCreateSnippet,
+  onSelectSnippet,
+  onCopyCode,
   onExportData,
   onImportClick,
 }) {
   const totalSnippets = snippets.length;
-  const favoritesCount = snippets.filter((s) => s.isFavorite).length;
+  const favorites = snippets.filter((s) => s.isFavorite);
+  const favoritesCount = favorites.length;
 
   const uniqueLanguages = new Set(snippets.map((s) => s.language)).size;
   const allTags = new Set(snippets.flatMap((s) => s.tags || [])).size;
 
-  // Time of day greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
@@ -75,6 +78,14 @@ export function DashboardPage({
         languagesCount={uniqueLanguages}
         tagsCount={allTags}
         onNavigate={onNavigate}
+      />
+
+      {/* Favorites Widget */}
+      <FavoritesWidget
+        favorites={favorites}
+        onSelectSnippet={onSelectSnippet}
+        onNavigateToFavorites={() => onNavigate('favorites')}
+        onCopyCode={onCopyCode}
       />
 
       {/* Quick Actions Bar */}
