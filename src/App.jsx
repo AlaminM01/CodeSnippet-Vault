@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from './components/layout';
-import { DashboardPage, SnippetsPage, LanguagesPage, FavoritesPage } from './pages';
+import { DashboardPage, SnippetsPage, LanguagesPage, FavoritesPage, TagsPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { SnippetDetailModal } from './components/snippets';
 import { ConfirmModal, CommandPaletteModal } from './components/common';
@@ -14,6 +14,7 @@ function AppContent() {
   const [snippets, setSnippets] = useState(INITIAL_SNIPPETS);
   const [theme, setTheme] = useState('dark');
   const [selectedLanguageFilter, setSelectedLanguageFilter] = useState('all');
+  const [selectedTagFilter, setSelectedTagFilter] = useState(null);
 
   // Modal States
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -174,7 +175,10 @@ function AppContent() {
         activeTab={activeTab}
         onSelectTab={(tab) => {
           setActiveTab(tab);
-          if (tab === 'snippets') setSelectedLanguageFilter('all');
+          if (tab === 'snippets') {
+            setSelectedLanguageFilter('all');
+            setSelectedTagFilter(null);
+          }
         }}
         onOpenCreateModal={handleOpenCreate}
         onOpenSearch={() => setIsSearchModalOpen(true)}
@@ -190,7 +194,7 @@ function AppContent() {
             : activeTab === 'favorites'
             ? 'Favorite Snippets'
             : activeTab === 'tags'
-            ? 'Tags & Categories'
+            ? 'Tags & Topics'
             : 'Languages & Stacks'
         }
         pageDescription="Manage, organize, and inspect your code repository"
@@ -200,7 +204,10 @@ function AppContent() {
             snippets={snippets}
             onNavigate={(tab) => {
               setActiveTab(tab);
-              if (tab === 'snippets') setSelectedLanguageFilter('all');
+              if (tab === 'snippets') {
+                setSelectedLanguageFilter('all');
+                setSelectedTagFilter(null);
+              }
             }}
             onCreateSnippet={handleOpenCreate}
             onSelectSnippet={handleSelectSnippet}
@@ -214,7 +221,9 @@ function AppContent() {
           <SnippetsPage
             snippets={snippets}
             selectedLanguage={selectedLanguageFilter}
+            selectedTag={selectedTagFilter}
             onSelectLanguage={setSelectedLanguageFilter}
+            onSelectTag={setSelectedTagFilter}
             onSelectSnippet={handleSelectSnippet}
             onEditSnippet={handleOpenEdit}
             onDeleteSnippet={handleRequestDelete}
@@ -234,7 +243,23 @@ function AppContent() {
             onDuplicateSnippet={handleDuplicateSnippet}
             onToggleFavorite={handleToggleFavorite}
             onCopyCode={handleCopyCode}
-            onNavigateToAll={() => setActiveTab('snippets')}
+            onNavigateToAll={() => {
+              setActiveTab('snippets');
+              setSelectedLanguageFilter('all');
+              setSelectedTagFilter(null);
+            }}
+          />
+        )}
+
+        {activeTab === 'tags' && (
+          <TagsPage
+            snippets={snippets}
+            onSelectSnippet={handleSelectSnippet}
+            onEditSnippet={handleOpenEdit}
+            onDeleteSnippet={handleRequestDelete}
+            onDuplicateSnippet={handleDuplicateSnippet}
+            onToggleFavorite={handleToggleFavorite}
+            onCopyCode={handleCopyCode}
           />
         )}
 

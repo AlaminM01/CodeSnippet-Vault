@@ -1,19 +1,22 @@
 import React, { useState, useMemo } from 'react';
-import { FiGrid, FiList, FiPlus, FiCode } from 'react-icons/fi';
+import { FiGrid, FiList, FiPlus, FiCode, FiX, FiTag } from 'react-icons/fi';
 import { SnippetCard } from '../components/snippets/SnippetCard';
 import { FilterBar } from '../components/snippets/FilterBar';
 import { Button } from '../components/common/Button';
 import { EmptyState } from '../components/common/EmptyState';
 import { SearchBar } from '../components/common/SearchBar';
+import { Badge } from '../components/common/Badge';
 import { filterSnippets } from '../utils/search';
 
 /**
- * Snippets Listing Page View with Real-time Search, Language Filtering & Sorting
+ * Snippets Listing Page View with Real-time Search, Language & Tag Filtering & Sorting
  */
 export function SnippetsPage({
   snippets = [],
   selectedLanguage = 'all',
+  selectedTag = null,
   onSelectLanguage,
+  onSelectTag,
   onSelectSnippet,
   onEditSnippet,
   onDeleteSnippet,
@@ -25,38 +28,40 @@ export function SnippetsPage({
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentLang, setCurrentLang] = useState(selectedLanguage);
+  const [currentTag, setCurrentTag] = useState(selectedTag);
   const [sortBy, setSortBy] = useState('newest');
 
-  // Sync external selectedLanguage if changed
   React.useEffect(() => {
     setCurrentLang(selectedLanguage);
   }, [selectedLanguage]);
 
+  React.useEffect(() => {
+    setCurrentTag(selectedTag);
+  }, [selectedTag]);
+
   // Combined Filtering & Sorting
   const filteredAndSortedSnippets = useMemo(() => {
-    // 1. Language Filter
     let result = snippets;
+
+    // 1. Language Filter
     if (currentLang !== 'all') {
       result = result.filter((s) => s.language === currentLang);
     }
 
-    // 2. Real-time Search Filter
+    // 2. Tag Filter
+    if (currentTag) {
+      result = result.filter((s) => (s.tags || []).includes(currentTag));
+    }
+
+    // 3. Real-time Search Filter
     result = filterSnippets(result, searchQuery);
 
-    // 3. Sorting
+    // 4. Sorting
     return [...result].sort((a, b) => {
-      if (sortBy === 'newest') {
-        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-      }
-      if (sortBy === 'oldest') {
-        return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
-      }
-      if (sortBy === 'title-asc') {
-        return (a.title || '').localeCompare(b.title || '');
-      }
-      if (sortBy === 'title-desc') {
-        return (b.title || '').localeCompare(a.title || '');
-      }
+      if (sortBy === 'newest') return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      if (sortBy === 'oldest') return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+      if (sortBy === 'title-asc') return (a.title || '').localeCompare(b.title || '');
+      if (sortBy === 'title-desc') return (b.title || '').localeCompare(a.title || '');
       if (sortBy === 'lines-desc') {
         const linesA = (a.code || '').split('\n').length;
         const linesB = (b.code || '').split('\n').length;
@@ -64,7 +69,7 @@ export function SnippetsPage({
       }
       return 0;
     });
-  }, [snippets, currentLang, searchQuery, sortBy]);
+  }, [snippets, currentLang, currentTag, searchQuery, sortBy]);
 
   return (
     <div className="space-y-5">
@@ -80,13 +85,12 @@ export function SnippetsPage({
             </span>
           </div>
           <p className="text-xs text-dark-subtle light:text-light-subtle">
-            Browse, search, filter by language, manage, and duplicate snippets
+            Browse, search, filter by language or tag, manage, and duplicate snippets
           </p>
         </div>
 
         {/* View Switcher & Action */}
         <div className="flex items-center gap-3">
-          {/* Grid vs List View Mode Toggle */}
           <div className="flex items-center p-1 rounded-lg bg-dark-card dark:bg-dark-card light:bg-slate-100 border border-dark-border dark:border-dark-border light:border-slate-200">
             <button
               type="button"
@@ -126,6 +130,25 @@ export function SnippetsPage({
         </div>
       </div>
 
+      {/* Active Tag Filter Indicator */}
+      {currentTag && (
+        <div className="flex items-center gap-2 p-2 px-3 rounded-lg bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300">
+          <FiTag className="text-purple-400" />
+          <span>Active Tag: <strong>#{currentTag}</strong></span>
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentTag(null);
+              if (onSelectTag) onSelectTag(null);
+            }}
+            className="ml-auto p-0.5 rounded-md hover:bg-purple-500/20 text-purple-300"
+            title="Clear tag filter"
+          >
+            <FiX className="text-sm" />
+          </button>
+        </div>
+      )}
+
       {/* Search and Language Filter Controls */}
       <div className="space-y-3">
         <div className="max-w-xl">
@@ -153,17 +176,19 @@ export function SnippetsPage({
       {filteredAndSortedSnippets.length === 0 ? (
         <EmptyState
           icon={FiCode}
-          title={searchQuery || currentLang !== 'all' ? 'No matching snippets' : 'No snippets saved yet'}
+          title={searchQuery || currentLang !== 'all' || currentTag ? 'No matching snippets' : 'No snippets saved yet'}
           description={
-            searchQuery || currentLang !== 'all'
-              ? `No snippets found matching your current search query or language filter (${currentLang}). Try resetting your filters.`
+            searchQuery || currentLang !== 'all' || currentTag
+              ? `No snippets found matching your current filters. Try clearing your filters or search query.`
               : 'Your snippet vault is currently empty. Start saving reusable code snippets today!'
           }
-          actionLabel={searchQuery || currentLang !== 'all' ? 'Reset Filters' : 'Create First Snippet'}
+          actionLabel={searchQuery || currentLang !== 'all' || currentTag ? 'Reset All Filters' : 'Create First Snippet'}
           onAction={() => {
-            if (searchQuery || currentLang !== 'all') {
+            if (searchQuery || currentLang !== 'all' || currentTag) {
               setSearchQuery('');
               setCurrentLang('all');
+              setCurrentTag(null);
+              if (onSelectTag) onSelectTag(null);
             } else {
               onCreateSnippet();
             }
