@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from './components/layout';
-import { DashboardPage } from './pages';
+import { DashboardPage, SnippetsPage } from './pages';
 import { SnippetFormModal } from './components/forms';
 import { INITIAL_SNIPPETS } from './data/initialSnippets';
 import { generateSnippetId } from './utils/formatters';
@@ -46,6 +46,15 @@ export default function App() {
     setSnippets([newSnippet, ...snippets]);
   };
 
+  // Toggle favorite status
+  const handleToggleFavorite = (id) => {
+    setSnippets(
+      snippets.map((snip) =>
+        snip.id === id ? { ...snip, isFavorite: !snip.isFavorite } : snip
+      )
+    );
+  };
+
   return (
     <>
       <AppLayout
@@ -68,7 +77,7 @@ export default function App() {
             ? 'Tags & Categories'
             : 'Languages'
         }
-        pageDescription="Personal code vault statistics, metrics, and quick actions"
+        pageDescription="Manage, organize, and search your code repository"
       >
         {activeTab === 'dashboard' && (
           <DashboardPage
@@ -77,6 +86,18 @@ export default function App() {
             onCreateSnippet={() => setIsCreateModalOpen(true)}
             onExportData={() => console.log('Export')}
             onImportClick={() => console.log('Import')}
+          />
+        )}
+
+        {activeTab === 'snippets' && (
+          <SnippetsPage
+            snippets={snippets}
+            onSelectSnippet={(snip) => console.log('Selected snippet:', snip)}
+            onEditSnippet={(snip) => console.log('Edit snippet:', snip)}
+            onDeleteSnippet={(snip) => console.log('Delete snippet:', snip)}
+            onDuplicateSnippet={(snip) => console.log('Duplicate snippet:', snip)}
+            onToggleFavorite={handleToggleFavorite}
+            onCreateSnippet={() => setIsCreateModalOpen(true)}
           />
         )}
       </AppLayout>
