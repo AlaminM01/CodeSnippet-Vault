@@ -1,4 +1,3 @@
-/**
- * Dashboard components: StatCard, StatsGrid, LanguageDistribution, RecentSnippets, FavoritesWidget
- */
-export const DASHBOARD_COMPONENTS = 'dashboard';
+export * from './StatCard';
+export * from './StatsGrid';
+export * from './QuickActions';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppLayout } from './components/layout';
-import { Card, Button, Badge } from './components/common';
+import { DashboardPage } from './pages';
 import { INITIAL_SNIPPETS } from './data/initialSnippets';
 
 export default function App() {
@@ -41,22 +41,17 @@ export default function App() {
           ? 'Tags & Categories'
           : 'Languages'
       }
-      pageDescription="Manage, explore, and organize your code repository"
+      pageDescription="Personal code vault statistics, metrics, and quick actions"
     >
-      <div className="space-y-6">
-        <Card className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight">Navigation System Ready</h2>
-            <p className="text-sm text-dark-muted light:text-light-muted mt-1">
-              Linear & VS Code inspired layout with sidebar, navbar, responsive drawer, and quick actions.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Badge color="#4f6bf0">Active Tab: {activeTab}</Badge>
-            <Badge color="#10b981">{snippets.length} Stored Snippets</Badge>
-          </div>
-        </Card>
-      </div>
+      {activeTab === 'dashboard' && (
+        <DashboardPage
+          snippets={snippets}
+          onNavigate={(tab) => setActiveTab(tab)}
+          onCreateSnippet={() => console.log('Create Snippet')}
+          onExportData={() => console.log('Export')}
+          onImportClick={() => console.log('Import')}
+        />
+      )}
     </AppLayout>
   );
 }
